@@ -1,0 +1,13 @@
+total 172
+drwxr-xr-x 2 root root  4096 Mar 16 09:50 .
+drwxr-xr-x 5 user user  4096 Mar 16 09:50 ..
+-rw-r--r-- 1 root root  5900 Mar 16 09:44 README.md
+-rw-r--r-- 1 root root   593 Mar 16 09:42 __init__.py
+-rw-r--r-- 1 root root 27425 Mar 16 09:42 app.py
+-rw-r--r-- 1 root root 14081 Mar 16 09:37 chart_utils.py
+-rw-r--r-- 1 root root  6245 Mar 16 09:34 config.py
+-rw-r--r-- 1 root root 11927 Mar 16 09:35 data_processor.py
+-rw-r--r-- 1 root root 50678 Mar 16 09:50 electude_dashboard_pro.py
+-rw-r--r-- 1 root root  8846 Mar 16 09:43 generate_sample_data.py
+-rw-r--r-- 1 root root   364 Mar 16 09:44 requirements.txt
+-rw-r--r-- 1 root root 16456 Mar 16 09:33 styles.py

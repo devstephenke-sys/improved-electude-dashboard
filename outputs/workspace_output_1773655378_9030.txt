@@ -1,0 +1,20 @@
+Electude Domain,Institution,Language,Teacher / Trainer,EMAIL,Phone number,Number of Students
+bosco-children.electude.eu,Bosco Children TVET Institute - Ethiopia,ENG,Yohanes Mulaw,johntig08@gmail.com,+251911648694,0.0
+bosco-children.electude.eu,Bosco Children TVET Institute - Ethiopia,ENG,Tederos Yebeyo,yeabyotedros@gmail.com,+251931216938,
+donbosco-wau.electude.eu,Don Bosco Wau – South Sudan,ENG,EMMANUEL SILIMAN,emmanuelsiliman882@gmail,+211923398345,
+donbosco-wau.electude.eu,Don Bosco Wau – South Sudan,ENG,YASIR ABAS KUKU,kukualajana@gmail.com,+2110927250678,
+donbosco-wau.electude.eu,Don Bosco Wau – South Sudan,ENG,ALI RICHARD,alirichard1996@gmail.com,+211920212971,
+donbosco-wau.electude.eu,Don Bosco Wau – South Sudan,ENG,ALHDAI TAHA,alhaditaha65@gmail.com,+211929664257,
+donbosco-wau.electude.eu,Don Bosco Wau – South Sudan,ENG,Aphraim Mohamud,Mohamudafrahim@gmail.com,+211926822151,29.0
+donbosco-juba.electude.eu,Don Bosco VTC Juba - South Sudan,ENG,Lual Deel,lualdeel69@gmail.com,+211923233322,
+donbosco-juba.electude.eu,Don Bosco VTC Juba - South Sudan,ENG,Garang Mamer,garangmamer46@gmail.com,+211925476088,
+donbosco-juba.electude.eu,Don Bosco VTC Juba - South Sudan,ENG,Emmanuel Juma Tom,ejuma352@gmail.com,+211926119894,
+donbosco-juba.electude.eu,Don Bosco VTC Juba - South Sudan,ENG,Rony Nicolas,ronynicolasmartin@gmail.com,+211928805337,0.0
+donbosco-iringa.electude.eu,Don Bosco Youth Training Centre Iringa - Tanzania,ENG,SEPHANIA NZIKU,Sephanianziku2020@gmail.com,+255759702889,
+donbosco-iringa.electude.eu,Don Bosco Youth Training Centre Iringa - Tanzania,ENG,IBRAHIM GODRICK KADUMA,ibrahkadibrah@gmail.com,+255673154378,0.0
+donbosco-oysterbay.electude.eu,Don Bosco Oysterbay VTC - Tanzania,ENG,John Carlo mideke,midekemvm@gmail.com,+255672180044,0.0
+donbosco-dodoma.electude.eu,Don Bosco Technical Training College Dodoma - Tanzania,ENG,Fr. Fred Njuguna,fnsavio@gmail.com,+255753375209,
+donbosco-dodoma.electude.eu,Don Bosco Technical Training College Dodoma - Tanzania,ENG,Hamisi Joseph Yakobi,hamisijyakobo360@gmail.com,+255744795258,59.0
+donbosco-embu.electude.eu,Don Bosco Technical Institute - Embu - Kenya,ENG,Mr. Alfred Ochieng,alfredochiengopongo@gmail.com,+254721432565,11.0
+donbosco-boystown.electude.eu,Don Bosco Boys Town Technical Institute - Kenya,ENG,Mr Aron Kisabit,haronkipkoech5@gmail.com,+254717212139,
+donbosco-boystown.electude.eu,Don Bosco Boys Town Technical Institute - Kenya,ENG,Samwel Odhiabo,ogorosamuel2@gmail.com,+254708056324,
