@@ -239,6 +239,22 @@ def render_header():
 # METRICS COMPONENT
 # =============================================================================
 
+def render_overview(filtered: pd.DataFrame, survey_df: pd.DataFrame, filter_settings: Dict):
+    """
+    Render the main overview dashboard.
+    
+    Args:
+        filtered: Filtered dataframe
+        survey_df: Optional survey dataframe
+        filter_settings: Dictionary of filter settings
+    """
+    if filter_settings["show_metrics"]:
+        render_metrics(filtered, survey_df)
+    
+    if filter_settings["show_charts"]:
+        st.divider()
+        render_charts(filtered)
+
 def render_metrics(filtered: pd.DataFrame, survey_df: pd.DataFrame = None):
     """
     Render the key metrics section with professional cards.
@@ -378,6 +394,55 @@ def render_charts(filtered: pd.DataFrame):
         else:
             st.plotly_chart(create_empty_chart("No teacher data available"), use_container_width=True)
 
+
+def render_domain_analysis(filtered: pd.DataFrame):
+    """
+    Render the analysis by Electude Domain.
+    
+    Args:
+        filtered: Filtered dataframe
+    """
+    st.markdown(get_section_header_html("🔧", "Electude Domain Analysis"), unsafe_allow_html=True)
+    st.write("Explore metrics and entities grouped by their Electude domain. Click on a domain to visit its page.")
+
+    domain_agg = DataAggregator.aggregate_by_domain(filtered)
+
+    if domain_agg.empty:
+        st.info("No domain data available for the current selection.")
+        return
+
+    for _, row in domain_agg.iterrows():
+        domain = row["Electude Domain"]
+        url = row["Domain URL"]
+        
+        with st.expander(f"{domain} ({row['Total Institutions']} Institutions, {row['Total Students']:,} Students)"):
+            if pd.notna(url):
+                st.markdown(f"### [{domain}]({url})", unsafe_allow_html=True)
+            else:
+                st.markdown(f"### {domain}", unsafe_allow_html=True)
+
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Total Students", f"{row['Total Students']:,}")
+            col2.metric("Total Teachers", f"{row['Total Teachers']:,}")
+            col3.metric("Total Institutions", f"{row['Total Institutions']:,}")
+
+            st.markdown("---")
+
+            domain_institutions = filtered[filtered["Electude Domain"] == domain]
+            
+            st.markdown("#### Institutions in this Domain")
+            if not domain_institutions.empty:
+                for inst in domain_institutions["Institution"].unique():
+                    st.markdown(f"- {inst}")
+            else:
+                st.caption("No institutions listed for this domain.")
+
+            st.markdown("#### Teachers in this Domain")
+            teachers_df = domain_institutions[["Teacher / Trainer", "EMAIL", "Number of Students"]].drop_duplicates("Teacher / Trainer")
+            if not teachers_df.empty:
+                st.dataframe(teachers_df, use_container_width=True)
+            else:
+                st.caption("No teachers listed for this domain.")
 
 # =============================================================================
 # SURVEY ANALYSIS SECTION
@@ -546,25 +611,24 @@ def render_ai_insights(filtered: pd.DataFrame, survey_df: pd.DataFrame = None):
 # TEACHER DIRECTORY SECTION
 # =============================================================================
 
-def render_teacher_directory(filtered: pd.DataFrame):
+def render_directory(filtered: pd.DataFrame):
     """
-    Render the searchable teacher directory.
+    Render the searchable directory with pagination.
     
     Args:
         filtered: Filtered dataframe
     """
-    st.markdown(get_section_header_html("👨‍🏫", "Teacher Directory"), unsafe_allow_html=True)
+    st.markdown(get_section_header_html("", "Institution & Teacher Directory"), unsafe_allow_html=True)
     
     # Search input
     search = st.text_input(
-        "🔍 Search teachers",
+        "🔍 Search Directory",
         placeholder="Enter teacher name, institution, or email...",
-        key="teacher_search"
+        key="directory_search"
     )
     
     # Filter based on search
     directory = filtered.copy()
-    
     if search:
         mask = (
             directory["Teacher / Trainer"].str.contains(search, case=False, na=False) |
@@ -572,23 +636,42 @@ def render_teacher_directory(filtered: pd.DataFrame):
             directory["EMAIL"].str.contains(search, case=False, na=False)
         )
         directory = directory[mask]
-    
+
     # Display columns
     display_cols = [
         "Institution", "Teacher / Trainer", "EMAIL", 
-        "Phone number", "Number of Students", "Language"
+        "Phone number", "Number of Students", "Language", "Country", "Domain URL"
     ]
-    
     available_cols = [col for col in display_cols if col in directory.columns]
     
-    if not directory.empty:
-        st.dataframe(
-            directory[available_cols].sort_values("Number of Students", ascending=False),
-            use_container_width=True,
-            height=400
-        )
-    else:
-        st.info("No teachers match your search criteria.")
+    if directory.empty:
+        st.info("No records match your search criteria.")
+        return
+
+    # Pagination
+    page_size = st.selectbox("Records per page", [10, 20, 50, 100], index=1)
+    total_records = len(directory)
+    total_pages = (total_records // page_size) + (1 if total_records % page_size > 0 else 0)
+    
+    page_num = 1
+    if total_pages > 1:
+        page_num = st.number_input("Page", min_value=1, max_value=total_pages, value=1, step=1)
+    
+    start_idx = (page_num - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_df = directory.sort_values("Number of Students", ascending=False).iloc[start_idx:end_idx]
+    
+    st.caption(f"Showing {len(paginated_df)} of {total_records} records. Page {page_num} of {total_pages}.")
+
+    st.data_editor(
+        paginated_df[available_cols],
+        column_config={
+            "Domain URL": st.column_config.LinkColumn("Domain Link", display_text="Visit Site")
+        },
+        use_container_width=True,
+        height=min(600, (len(paginated_df) + 1) * 35 + 3),
+        hide_index=True,
+    )
 
 
 # =============================================================================
@@ -736,35 +819,37 @@ def main():
     # Render sidebar and get filters
     filtered, filter_settings = render_sidebar(df_clean)
     
-    # Main content area
-    if filter_settings["show_metrics"]:
-        render_metrics(filtered, survey_df)
-    
-    st.divider()
-    
-    if filter_settings["show_charts"]:
-        render_charts(filtered)
-    
-    st.divider()
-    
-    # Survey Analysis (if data available)
+    # Main content area with tabs
+    tab_items = ["📊 Dashboard Overview", "🔧 Domain Analysis", "📚 Directory", "🧹 Data Quality"]
     if config.app.enable_survey_analysis and not survey_df.empty:
-        render_survey_analysis(survey_df, filtered)
-        st.divider()
+        tab_items.insert(3, "⭐ Satisfaction Analysis")
+
+    tabs = st.tabs(tab_items)
+
+    with tabs[0]:
+        render_overview(filtered, survey_df, filter_settings)
+
+    with tabs[1]:
+        render_domain_analysis(filtered)
+
+    with tabs[2]:
+        render_directory(filtered)
+    
+    tab_index = 3
+    if config.app.enable_survey_analysis and not survey_df.empty:
+        with tabs[tab_index]:
+            render_survey_analysis(survey_df, filtered)
+        tab_index += 1
+
+    with tabs[tab_index]:
+        render_data_quality(df_clean, quality_report)
+    
+    st.divider()
     
     # AI Insights
     if config.app.enable_ai_insights:
         render_ai_insights(filtered, survey_df)
         st.divider()
-    
-    # Teacher Directory
-    if filter_settings["show_data_table"]:
-        render_teacher_directory(filtered)
-        st.divider()
-    
-    # Data Quality
-    render_data_quality(df_clean, quality_report)
-    st.divider()
     
     # Export Section
     if config.app.enable_data_export:
@@ -772,7 +857,6 @@ def main():
     
     # Footer
     render_footer()
-
 
 if __name__ == "__main__":
     main()
